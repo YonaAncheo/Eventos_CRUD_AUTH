@@ -2,18 +2,27 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
+import HomePage from './pages/HomePage';
+import EventPage from './pages/EventPage';
+import EventFormPage from './pages/EventFormPage';
+import ProfilePage from './pages/ProfilePage';
+import ProtectedRoute from './ProtectedRoute';
+
 
 function App() {
   return (
     <AuthProvider>
       <Routes>
-        <Route path="/" element={<h1>Home Page</h1>} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/events" element={<h1>eventos</h1>} />
-        <Route path="/events/:id" element={<h1>eventos por id</h1>} />
-        <Route path="/add-event" element={<h1>agregar evento</h1>} />
-        <Route path="/profile" element={<h1>perfil</h1>} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/events" element={<EventPage />} />
+          <Route path="/events/:id" element={<EventFormPage/>} />
+          <Route path="/add-event" element={<EventFormPage/>} />
+          <Route path="/profile" element={<ProfilePage />} />
+
+        </Route>
       </Routes>
     </AuthProvider>
   )

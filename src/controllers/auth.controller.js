@@ -1,6 +1,8 @@
 import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
 import { createAccessToken } from '../libs/jwt.js';
+import  jwt from 'jsonwebtoken';
+import { TOKEN_SECRET } from '../config.js';
 
 
 export const register = async (req,res) => {
@@ -108,3 +110,31 @@ export const profile = async (req, res) => {
     updatedAt: userFound.updatedAt
   });
 }
+
+export const verifyToken = async (req, res) => {
+  // Obtener token de cookie o header
+  let token = req.cookies.token;
+  if (!token && req.headers.authorization) {
+    const authHeader = req.headers.authorization;
+    if (authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    }
+  }
+  if (!token) return res.status(401).json({ message: 'No token provided' });
+
+  jwt.verify(token, TOKEN_SECRET, async (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+
+    const userFound = await User.findById(decoded.id);
+    if (!userFound) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    return res.json({
+      id: decoded.id,
+      username: userFound.username,
+      email: userFound.email,
+    });
+  });
+};
