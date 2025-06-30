@@ -7,11 +7,13 @@ import EventPage from './pages/EventPage';
 import EventFormPage from './pages/EventFormPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './ProtectedRoute';
+import Navbar from './components/Navbar';
 
 
 function App() {
   return (
     <AuthProvider>
+      <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
