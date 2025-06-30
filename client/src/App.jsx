@@ -5,10 +5,11 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import AddEvent from './pages/AddEvent';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <Navbar />
       <div style={{ padding: '2rem' }}>
         <Routes>
@@ -21,7 +22,7 @@ function App() {
           <Route path="/events/:id" element={<h1>listar evento con ID</h1>} />
         </Routes>
       </div>
-    </>
+    </AuthProvider>
   );
 }
 
