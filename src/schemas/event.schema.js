@@ -8,8 +8,6 @@ export const createEventSchema = z.object({
   }),
   description: z.string({
     required_error: 'Description is required',
-  }).min(10, {
-    message: 'Description must be at least 10 characters long',
   }),
   location: z.string({
     required_error: 'Location is required',
@@ -26,8 +24,6 @@ export const updateEventSchema = z.object({
   }).optional(),
   description: z.string({
     required_error: 'Description is required',
-  }).min(3, {
-    message: 'Description must be at least 10 characters long',
   }).optional(),
   location: z.string({
     required_error: 'Location is required',
