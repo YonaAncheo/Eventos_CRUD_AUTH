@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getEventsRequest, getEventRequest, deleteEventRequest, updateEventRequest } from '../api/events';
+import { getCsrfToken } from '../api/csrf';
+import '../pages/styles.css';
 
 function EventPage() {
   const [events, setEvents] = useState([]);
@@ -27,7 +29,9 @@ function EventPage() {
   const handleDelete = async (id) => {
     const confirm = window.confirm('¿Estás seguro de que deseas eliminar este evento?');
     if (!confirm) return;
-    await deleteEventRequest(id);
+    const csrfRes = await getCsrfToken();
+    const config = { headers: { 'X-CSRF-Token': csrfRes.data.csrfToken } };
+    await deleteEventRequest(id, config);
     getEvents();
   };
 
@@ -38,35 +42,58 @@ function EventPage() {
     if (newDescription === null) return;
     const newLocation = window.prompt('Nueva ubicación:', event.location || '');
     if (newLocation === null) return;
+    const csrfRes = await getCsrfToken();
+    const config = { headers: { 'X-CSRF-Token': csrfRes.data.csrfToken } };
     await updateEventRequest(event._id, {
       title: newTitle,
       description: newDescription,
       location: newLocation
-    });
+    }, config);
     getEvents();
   };
 
   return (
-    <div>
-      <h1>Eventos</h1>
-      <form onSubmit={handleSearch} style={{ marginBottom: 20 }}>
-        <input
-          type="text"
-          placeholder="Buscar por título"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
-        <button type="submit">Buscar</button>
-      </form>
-      <ul>
-        {filteredEvents.map(event => (
-          <li key={event._id}>
-            <b>{event.title}</b> - {event.description} - <i>{event.location}</i>
-            <button onClick={() => handleUpdate(event)} style={{marginLeft:10}}>Actualizar</button>
-            <button onClick={() => handleDelete(event._id)} style={{marginLeft:10}}>Eliminar</button>
-          </li>
-        ))}
-      </ul>
+    <div className="centered-container">
+      <div className="card" style={{width:'100%',maxWidth:600}}>
+        <h1>Eventos</h1>
+        <form onSubmit={handleSearch} style={{ marginBottom: 20 }}>
+          <input
+            type="text"
+            placeholder="Buscar por título"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          <button type="submit">Buscar</button>
+        </form>
+        <div style={{ width: '100%' }}>
+          {filteredEvents.map(event => (
+            <div key={event._id} style={{
+              background: '#fff',
+              borderRadius: '8px',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+              margin: '1rem 0',
+              padding: '1.2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '0.5rem'
+            }}>
+              <div style={{fontWeight:'bold', fontSize:'1.2rem'}}>{event.title}</div>
+              <div style={{color:'#444'}}>{event.description}</div>
+              <div style={{color:'#007bff', fontStyle:'italic'}}>{event.location}</div>
+              {event.createdAt && (
+                <div style={{color:'#888', fontSize:'0.95rem'}}>
+                  Creado: {new Date(event.createdAt).toLocaleString()}
+                </div>
+              )}
+              <div style={{marginTop:'0.5rem', display:'flex', gap:'0.5rem'}}>
+                <button onClick={() => handleUpdate(event)} style={{background:'#ffc107', color:'#222'}}>Actualizar</button>
+                <button onClick={() => handleDelete(event._id)} style={{background:'#dc3545'}}>Eliminar</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

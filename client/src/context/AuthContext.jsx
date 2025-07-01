@@ -15,22 +15,24 @@ export const AuthProvider = ({ children }) => {
   const signup = async (user) => {
     try {
       const res = await registerRequest(user);
-      console.log(res.data);
       setUser(res.data);
       setIsAuthenticated(true);
+      return { success: true };
     } catch (error) {
-      console.log(error.response.data);
+      const msg = error.response?.data?.message || 'Error en el registro';
+      return { success: false, message: msg };
     }
   };
 
   const signin = async (user) => {
     try {
       const res = await loginRequest(user);
-      console.log(res.data);
       setUser(res.data);
       setIsAuthenticated(true);
+      return { success: true };
     } catch (error) {
-      console.log(error.response.data);
+      const msg = error.response?.data?.message || 'Credenciales inválidas';
+      return { success: false, message: msg };
     }
   };
 
